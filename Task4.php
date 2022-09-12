@@ -14,6 +14,7 @@ class Task4
                 $str .= ucfirst($item);
             }
         }
+
         return $str;
     }
 }
