@@ -19,6 +19,7 @@ class Task5
         if ($bubble !== 0) {
             $result = $bubble . $result;
         }
+
         return $result;
     }
     public function main(int $n): string
@@ -33,9 +34,11 @@ class Task5
             $number1 = $number2;
             $number2 = $number3;
         }
+
         return strval($number2);
     }
 }
+
 
 
 
