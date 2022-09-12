@@ -18,6 +18,8 @@ class Task8
                 $result .= $key . ': ' . $value . "\r\n";
             }
         }
+
         return $result;
     }
 }
+
