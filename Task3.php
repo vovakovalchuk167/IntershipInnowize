@@ -12,6 +12,7 @@ class Task3
         while (!($number / 10 < 1)) {
             $number = array_sum(str_split($number));
         }
+
         return $number;
     }
 }
