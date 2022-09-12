@@ -18,6 +18,7 @@ class Task10
             }
             $result[] = $n;
         }
+
         return $result;
     }
 }
