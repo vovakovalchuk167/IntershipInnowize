@@ -20,6 +20,7 @@ class Task2
             $newBirth = date_create();
             $result = intval(date_diff($birthdate, $newBirth)->format('%R%a'));
         }
+
         return abs($result);
     }
 }
