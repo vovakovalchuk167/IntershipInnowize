@@ -8,7 +8,7 @@ class Task6
     {
         if ($year > $lastYear  ($year == $lastYear && $month >= $lastMonth)  $year < 0) {
         throw new \InvalidArgumentException();
-    }
+        }
         $result = 0;
         $start = strtotime($year . '-' . $month . '-' . '01');
         $end = strtotime($lastYear . '-' . $lastMonth . '-' . '01');
@@ -18,6 +18,7 @@ class Task6
             }
             $start = strtotime('+1 month', $start);
         }
+        
         return $result;
     }
 }
