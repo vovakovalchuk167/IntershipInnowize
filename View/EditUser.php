@@ -14,10 +14,10 @@
 <div class="panel panel-success">
     <nav class="navbar navbar-light bg-light">
         <h2 class="p-3">Edit User</h2>
-        <a class="nav-link my-2 my-sm-0" href="../Controller/GetDataFromView.php?View=Index">Back to UserList</a>
+        <a class="nav-link my-2 my-sm-0" href="/">Back to UserList</a>
     </nav>
     <div class="panel-body">
-        <form class="p-a-1" action="../Controller/GetDataFromView.php?View=EditUserForm&id=<?php echo $user->getId() ?>"
+        <form class="p-a-1" action="/submitFormEditUser?id=<?php echo $user->getId() ?>"
               method="post">
             <div class="container">
                 <div class="row justify-content-md-center">

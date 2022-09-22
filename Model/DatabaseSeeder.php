@@ -1,25 +1,27 @@
 <?php
 
-//namespace Model;
+namespace Model;
 
 include_once('User.php');
 
 class DatabaseSeeder extends Database
 {
-    public static function seedUsersInDB($countOfUsers){
-        for($i = 0; $i < $countOfUsers; $i++){
-            $email = self::generateRandomString();
-            $name = self::generateRandomString() . '@gmail.com';
-            $value = rand(0,1) == 1;
+    public static function seedUsersInDB($countOfUsers)
+    {
+        for ($i = 0; $i < $countOfUsers; $i++) {
+            $email = self::generateRandomString() . '@gmail.com';
+            $name = self::generateRandomString();
+            $value = rand(0, 1) == 1;
             $gender = $value == 1 ? 'Male' : 'Female';
-            $value = rand(0,1) == 1;
+            $value = rand(0, 1) == 1;
             $status = $value == 1 ? 'Active' : 'Inactive';
             $user = new User($email, $name, $gender, $status);
             self::InsertUser($user);
         }
     }
 
-    private static function generateRandomString($length = 10): string {
+    private static function generateRandomString($length = 10): string
+    {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $charactersLength = strlen($characters);
         $randomString = '';

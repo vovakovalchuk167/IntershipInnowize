@@ -1,23 +1,26 @@
 <?php
-//namespace Controller;
-include_once('../Model/Database.php');
-include_once('../Model/User.php');
 
-//use User;
+namespace Controller;
+
+use Model\Database;
+use Model\User;
+
+include_once('Model/User.php');
+include_once('Model/Database.php');
 
 class HomeController
 {
-    public static function UpdateUserList($errorMessage = ''): void
+    public function userList($errorMessage = ''): void
     {
         $usersDB = Database::SelectUsers();
         $users = [];
         foreach ($usersDB as $userDB) {
             $users[] = new User($userDB["email"], $userDB["name"], $userDB["gender"], $userDB["status"]);
         }
-        include '../view/ListOfUsers.php';
+        include 'View/ListOfUsers.php';
     }
 
-    public static function FindUserByEmail($Email): ?User
+    public function findUserByEmail($Email): ?User
     {
         $usersDB = Database::SelectUsers();
         foreach ($usersDB as $userDB) {
@@ -30,36 +33,43 @@ class HomeController
         return null;
     }
 
-    public static function PostFormEdit($_post, $id): void
+    public function submitFormEditUser(): void
     {
-        $user = new User($_post["Email"], $_post["Name"], $_post["Gender"], $_post["Status"]);
-        $user->setId($id);
+        $user = new User($_POST["Email"], $_POST["Name"], $_POST["Gender"], $_POST["Status"]);
+        $user->setId($_GET['id']);
         Database::UpdateUser($user);
-        self::UpdateUserList();
+        $this->userList();
     }
 
-    public static function PreFormEdit($Email): void
+    public function enterFormEditUser(): void
     {
-        $user = self::FindUserByEmail($Email);
+        $user = $this->findUserByEmail($_GET['Email']);
         if ($user) {
-            include '../view/EditUser.php';
+            include 'View/EditUser.php';
         } else {
-            self::UpdateUserList("Edit Error");
+            $this->userList("Edit Error");
         }
     }
 
-    public static function Delete($Email): void
+    public function delete(): void
     {
-        Database::Delete($Email);
-        self::UpdateUserList();
+        Database::Delete($_GET['Email']);
+        $this->userList();
     }
 
-    public static function AddUser($_post): void
+    public static function enterFormAddUser()
+    {
+        include 'View/AddUser.php';
+    }
+
+    public function submitFormAddUser(): void
     {
         $errorMessage = '';
+        $Email = $_POST['Email'];
         $add = true;
-        if (self::FindUserByEmail($_post['Email'])) {
+        if ($this->findUserByEmail($Email)) {
             $add = false;
+            $errorMessage = "User with $Email email already exists";
         }
 
         $forbiddenChars = ['/', '<', '>'];
@@ -76,9 +86,6 @@ class HomeController
             Database::InsertUser($user);
         }
 
-        self::UpdateUserList($errorMessage);
+        $this->userList($errorMessage);
     }
 }
-
-//TODO: Rename methods to more understandble
-//TODO: add seeds to DB

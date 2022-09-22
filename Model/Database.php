@@ -1,8 +1,8 @@
 <?php
 
-//namespace Model;
+namespace Model;
 
-//use mysqli;
+use mysqli;
 
 class Database
 {
@@ -35,7 +35,6 @@ class Database
         $name = $mysqli->real_escape_string($user->getName());
         $gender = $mysqli->real_escape_string($user->getGender());
         $status = $mysqli->real_escape_string($user->getStatus());
-        //$sql = "SELECT `price` FROM `$value` WHERE `name` = '$name'";
         $sql = "INSERT INTO Users (email, name, gender, status) VALUES ('$email', '$name', '$gender', '$status')";
 
         if (!$mysqli->query($sql)) {

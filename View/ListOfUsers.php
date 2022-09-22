@@ -32,12 +32,12 @@
                     echo "<td>$name</td>";
                     echo "<td>$gender</td>";
                     echo "<td>$status</td>";
-                    echo "<td><a href=\"..\Controller\GetDataFromView.php?View=EditUser&Email=$email\">Edit</a><br>";
+                    echo "<td><a href=\"enterFormEditUser?Email=$email\">Edit</a><br>";
                     echo "<a type =\"button\" class=\"btn btn-danger\" 
-                                    href=\"..\Controller\GetDataFromView.php?View=Delete&Email=$email \">Delete</a></td></tr>";
+                                    href=\"\delete?Email=$email \">Delete</a></td></tr>";
                 } ?>
             </table>
-            <a type="button" class="btn btn-primary" href="http://Task13/View/AddUser.php">Add User</a>
+            <a type="button" class="btn btn-primary" href="\enterFormAddUser">Add User</a>
         </div>
     </div>
 </body>
