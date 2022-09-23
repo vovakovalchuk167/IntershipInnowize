@@ -1,27 +1,30 @@
 <?php
 
+namespace Task13;
+
+use Controller\HomeController;
+
+include_once('Controller/HomeController.php');
+
 class Router
 {
-    private $controller;
+    private $routes;
 
-    public function __construct($controller)
+    public function addRoutes($routes): void
     {
-        $this->controller = $controller;
+        $this->routes = $routes;
     }
 
-    //Route => Method
-    private array $routes = [
-        '/' => 'userList',
-        '/enterFormAddUser' => 'enterFormAddUser',
-        '/submitFormAddUser' => 'submitFormAddUser',
-        '/delete' => 'delete',
-        '/enterFormEditUser' => 'enterFormEditUser',
-        '/submitFormEditUser' => 'submitFormEditUser'
-    ];
-
-    public function getRequest(): void
+    public function addRoute($route)
     {
-        $method = $this->routes[parse_url($_SERVER['REQUEST_URI'])['path']];
-        $this->controller->$method();
+        $this->routes[] = $route;
+    }
+
+    public function start(): void
+    {
+        $method = $this->routes[parse_url($_SERVER['REQUEST_URI'])['path']][0];
+        $controllerStr = $this->routes[parse_url($_SERVER['REQUEST_URI'])['path']]['1'];
+        $controller = new $controllerStr();
+        $controller->$method();
     }
 }

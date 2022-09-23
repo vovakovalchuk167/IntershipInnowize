@@ -2,8 +2,6 @@
 
 namespace Model;
 
-include_once('User.php');
-
 class DatabaseSeeder extends Database
 {
     public static function seedUsersInDB($countOfUsers)
