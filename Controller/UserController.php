@@ -10,7 +10,7 @@ include_once('Model/Database.php');
 
 class HomeController
 {
-    public function userList($errorMessage = ''): void
+    public function userList($errorMessages = []): void
     {
         $usersDB = Database::SelectUsers();
         $users = [];
@@ -64,19 +64,19 @@ class HomeController
 
     public function submitFormAddUser(): void
     {
-        $errorMessage = '';
+        $errorMessages = [];
         $Email = $_POST['Email'];
         $add = true;
         if ($this->findUserByEmail($Email)) {
             $add = false;
-            $errorMessage = "User with $Email email already exists";
+            $errorMessages[] = "User with $Email email already exists";
         }
 
         $forbiddenChars = ['/', '<', '>'];
         foreach ($forbiddenChars as $char) {
             if (strripos($_POST['Name'], $char)) {
                 $add = false;
-                $errorMessage = "You shouldn't use symbols for SQL injection)";
+                $errorMessages[] = "You shouldn't use symbols for SQL injection)";
                 break;
             }
         }
@@ -86,6 +86,6 @@ class HomeController
             Database::InsertUser($user);
         }
 
-        $this->userList($errorMessage);
+        $this->userList($errorMessages);
     }
 }
