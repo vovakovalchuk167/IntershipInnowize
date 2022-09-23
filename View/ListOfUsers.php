@@ -6,8 +6,10 @@
     <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.css"/>
 </head>
 <body>
-<?php if ($errorMessage != '') {
-    echo "<p class=\"text-danger\">$errorMessage</p>";
+<?php if (sizeof($errorMessages)) {
+    foreach ($errorMessages as $errorMessage){
+        echo "<p class=\"text-danger\">$errorMessage</p>";
+    }
 } ?>
 <div class="panel-heading text-center p-3 border bg-light"><h4>List Of Users</h4></div>
 <div class="container-fluid">
@@ -32,14 +34,20 @@
                     echo "<td>$name</td>";
                     echo "<td>$gender</td>";
                     echo "<td>$status</td>";
-                    echo "<td><a href=\"enterFormEditUser?Email=$email\">Edit</a><br>";
+                    echo "<td><a href=\"\users\\edit%GET?Email=$email\">Edit</a><br>";
                     echo "<a type =\"button\" class=\"btn btn-danger\" 
-                                    href=\"\delete?Email=$email \">Delete</a></td></tr>";
+                                     onclick=\"confirmDeleting('$email')\">Delete</a></td></tr>";
                 } ?>
             </table>
-            <a type="button" class="btn btn-primary" href="\enterFormAddUser">Add User</a>
+            <a type="button" href="\users\create%GET" class="btn btn-primary">Add User</a>
         </div>
     </div>
 </body>
 </html>
-<?php
+<script>
+    function confirmDeleting(email) {
+        if(confirm("Are you sure?")){
+            document.location.href = "/users/delete%GET?Email=" + email;
+        }
+    }
+</script>

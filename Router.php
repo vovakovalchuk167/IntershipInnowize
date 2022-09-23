@@ -2,9 +2,9 @@
 
 namespace Task13;
 
-use Controller\HomeController;
+use Controller\UserController;
 
-include_once('Controller/HomeController.php');
+include_once('Controller/UserController.php');
 
 class Router
 {

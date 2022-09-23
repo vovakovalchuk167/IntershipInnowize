@@ -5,14 +5,15 @@ namespace Controller;
 use Model\Database;
 use Model\User;
 
+include_once('Validator.php');
 include_once('Model/User.php');
 include_once('Model/Database.php');
 
-class HomeController
+class UserController
 {
-    public function userList($errorMessages = []): void
+    public function index($errorMessages = []): void
     {
-        $usersDB = Database::SelectUsers();
+        $usersDB = Database::selectUsers();
         $users = [];
         foreach ($usersDB as $userDB) {
             $users[] = new User($userDB["email"], $userDB["name"], $userDB["gender"], $userDB["status"]);
@@ -20,72 +21,50 @@ class HomeController
         include 'View/ListOfUsers.php';
     }
 
-    public function findUserByEmail($Email): ?User
+    public function update(): void
     {
-        $usersDB = Database::SelectUsers();
-        foreach ($usersDB as $userDB) {
-            if ($userDB['email'] == $Email) {
-                $user = new User($userDB["email"], $userDB["name"], $userDB["gender"], $userDB["status"]);
-                $user->setId($userDB['id']);
-                return $user;
-            }
+        $errorMessages = [];
+        $errorMessages = array_merge($errorMessages, \Validator::validateName($_POST['Name']));
+        $errorMessages = array_merge($errorMessages, \Validator::validateEmail($_POST['Email'], $_GET['id']));
+        if (!sizeof($errorMessages)) {
+            $user = new User($_POST["Email"], $_POST["Name"], $_POST["Gender"], $_POST["Status"]);
+            $user->setId($_GET['id']);
+            Database::updateUser($user);
         }
-        return null;
+        $this->index($errorMessages);
     }
 
-    public function submitFormEditUser(): void
+    public function edit(): void
     {
-        $user = new User($_POST["Email"], $_POST["Name"], $_POST["Gender"], $_POST["Status"]);
-        $user->setId($_GET['id']);
-        Database::UpdateUser($user);
-        $this->userList();
-    }
-
-    public function enterFormEditUser(): void
-    {
-        $user = $this->findUserByEmail($_GET['Email']);
+        $user = Database::findUserByEmail($_GET['Email']);
         if ($user) {
             include 'View/EditUser.php';
         } else {
-            $this->userList("Edit Error");
+            $this->index("Edit Error");
         }
     }
 
     public function delete(): void
     {
-        Database::Delete($_GET['Email']);
-        $this->userList();
+        Database::delete($_GET['Email']);
+        $this->index();
     }
 
-    public static function enterFormAddUser()
+    public static function create()
     {
         include 'View/AddUser.php';
     }
 
-    public function submitFormAddUser(): void
+    public function store(): void
     {
         $errorMessages = [];
-        $Email = $_POST['Email'];
-        $add = true;
-        if ($this->findUserByEmail($Email)) {
-            $add = false;
-            $errorMessages[] = "User with $Email email already exists";
-        }
-
-        $forbiddenChars = ['/', '<', '>'];
-        foreach ($forbiddenChars as $char) {
-            if (strripos($_POST['Name'], $char)) {
-                $add = false;
-                $errorMessages[] = "You shouldn't use symbols for SQL injection)";
-                break;
-            }
-        }
-
-        if ($add) {
+        $errorMessages = array_merge($errorMessages, \Validator::validateEmail($_POST['Email']));
+        $errorMessages = array_merge($errorMessages, \Validator::validateName($_POST['Name']));
+        if (!sizeof($errorMessages)) {
             $user = new User($_POST["Email"], $_POST["Name"], $_POST["Gender"], $_POST["Status"]);
-            Database::InsertUser($user);
+            Database::insertUser($user);
         }
 
-        $this->userList($errorMessages);
+        $this->index($errorMessages);
     }
 }

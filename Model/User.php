@@ -4,11 +4,11 @@ namespace Model;
 
 class User
 {
-    private $Email;
-    private $Name;
-    private $Gender;
-    private $Status;
-    private $Id;
+    private $email;
+    private $name;
+    private $gender;
+    private $status;
+    private $id;
 
     public function __construct(string $Email, string $Name, string $Gender, string $Status)
     {
@@ -20,52 +20,52 @@ class User
 
     public function getEmail()
     {
-        return $this->Email;
+        return $this->email;
     }
 
     public function getName()
     {
-        return $this->Name;
+        return $this->name;
     }
 
     public function getGender()
     {
-        return $this->Gender;
+        return $this->gender;
     }
 
     public function getStatus()
     {
-        return $this->Status;
+        return $this->status;
     }
 
     public function getId()
     {
-        return $this->Id;
+        return $this->id;
     }
 
-    public function setId($Id)
+    public function setId($id)
     {
-        $this->Id = $Id;
+        $this->id = $id;
     }
 
 
-    public function setEmail($Email): void
+    public function setEmail($email): void
     {
-        $this->Email = $Email;
+        $this->email = $email;
     }
 
-    public function setName($Name): void
+    public function setName($name): void
     {
-        $this->Name = $Name;
+        $this->name = $name;
     }
 
-    public function setGender($Gender): void
+    public function setGender($gender): void
     {
-        $this->Gender = $Gender;
+        $this->gender = $gender;
     }
 
-    public function setStatus($Status): void
+    public function setStatus($status): void
     {
-        $this->Status = $Status;
+        $this->status = $status;
     }
 }

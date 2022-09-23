@@ -14,7 +14,7 @@ class DatabaseSeeder extends Database
             $value = rand(0, 1) == 1;
             $status = $value == 1 ? 'Active' : 'Inactive';
             $user = new User($email, $name, $gender, $status);
-            self::InsertUser($user);
+            self::insertUser($user);
         }
     }
 
