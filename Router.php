@@ -23,7 +23,7 @@ class Router
     public function start(): void
     {
         $method = $this->routes[parse_url($_SERVER['REQUEST_URI'])['path']][0];
-        $controllerStr = $this->routes[parse_url($_SERVER['REQUEST_URI'])['path']]['1'];
+        $controllerStr = $this->routes[parse_url($_SERVER['REQUEST_URI'])['path']][1];
         $controller = new $controllerStr();
         $controller->$method();
     }

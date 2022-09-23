@@ -13,7 +13,8 @@ $router->addRoutes([
     '/submitFormAddUser' => ['submitFormAddUser', 'Controller\HomeController', 'POST'],
     '/delete' => ['delete', 'Controller\HomeController', 'GET'],
     '/enterFormEditUser' => ['enterFormEditUser', 'Controller\HomeController', 'GET'],
-    '/submitFormEditUser' => ['submitFormEditUser', 'Controller\HomeController', 'POST']
 ]);
+
+$router->addRoute(['/submitFormEditUser' => ['submitFormEditUser', 'Controller\HomeController', 'POST']]);
 
 $router->start();
