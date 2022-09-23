@@ -7,7 +7,7 @@
 </head>
 <body>
 <?php if (sizeof($errorMessages)) {
-    foreach ($errorMessages as $errorMessage){
+    foreach ($errorMessages as $errorMessage) {
         echo "<p class=\"text-danger\">$errorMessage</p>";
     }
 } ?>
@@ -46,7 +46,7 @@
 </html>
 <script>
     function confirmDeleting(email) {
-        if(confirm("Are you sure?")){
+        if (confirm("Are you sure?")) {
             document.location.href = "/users/delete%GET?Email=" + email;
         }
     }
