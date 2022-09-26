@@ -7,86 +7,111 @@ use mysqli;
 
 class Database
 {
-    public static function CreateDatabase(): void
-    {
-        $link = mysqli_connect("localhost", "root", "root");
-        $sql = "CREATE DATABASE IF NOT EXISTS Task13";
-
-        if (!mysqli_query($link, $sql)) {
-            echo 'Ошибка при создании базы данных: ' . mysqli_error() . "\n";
-        }
-        $mysqli = DatabaseConnect::getInstance()->getMysqliConnection();
-        //$link = mysqli_connect("localhost", "root", "root", "Task13");
-
-        $sql_arr = array("CREATE TABLE IF NOT EXISTS Users (
-        id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-		email VARCHAR(50),
-		name VARCHAR(50),
-        gender VARCHAR(20),
-        status VARCHAR(10))");
-
-        foreach ($sql_arr as $sql)
-            $mysqli->query($sql);
-    }
-
-    public static function insertUser(User $user): bool
+    public static function createTable($class)
     {
         $mysqli = DatabaseConnect::getInstance()->getMysqliConnection();
-        //new mysqli("localhost", "root", "root", "Task13");
-        $email = $mysqli->real_escape_string($user->getEmail());
-        $name = $mysqli->real_escape_string($user->getName());
-        $gender = $mysqli->real_escape_string($user->getGender());
-        $status = $mysqli->real_escape_string($user->getStatus());
-        $sql = "INSERT INTO Users (email, name, gender, status) VALUES ('$email', '$name', '$gender', '$status')";
-
-        if (!$mysqli->query($sql)) {
-            return false;
-        } else {
-            return true;
-        }
+        $mysqli->query($class::createTableSql());
     }
 
-    public static function findUserByEmail($email): ?User
+    public static function store($entity)
     {
-        $usersDB = self::selectUsers();
-        foreach ($usersDB as $userDB) {
-            if ($userDB['email'] == $email) {
-                $user = new User($userDB["email"], $userDB["name"], $userDB["gender"], $userDB["status"]);
-                $user->setId($userDB['id']);
-                return $user;
+        $methods = [];
+
+        foreach (get_class_methods($entity) as $method) {
+            if (substr($method, 0, 3) == 'get' && $method !== 'getId') {
+                $methods[] = $method;
             }
         }
-        return null;
-    }
 
-    public static function delete($Email): void
-    {
+        $mysqlValues = [];
+        $mysqlVars = [];
         $mysqli = DatabaseConnect::getInstance()->getMysqliConnection();
-        $link = mysqli_connect("localhost", "root", "root", "Task13");
-        $sql = "DELETE FROM Users WHERE email='$Email'";
+
+        foreach ($methods as $method) {
+            $mysqlVars[] = substr($method, 3);
+            $mysqlValues[] = $mysqli->real_escape_string($entity->$method());
+        }
+
+        $dbName = $entity::dbNameGet();
+        $sql = "INSERT INTO  $dbName (";
+        foreach ($mysqlVars as $var) {
+            $sql .= lcfirst($var) . ', ';
+        }
+
+        $sql = substr($sql, 0, -2);
+        $sql .= ') VALUES (';
+        foreach ($mysqlValues as $value) {
+            $sql .= "'$value', ";
+        }
+
+        $sql = substr($sql, 0, -2);
+        $sql .= ')';
         $mysqli->query($sql);
-        //mysqli_query($link, $sql);
     }
 
-    public static function updateUser($user): void
+    public static function find($class, $findBy, $parameter)
+    {
+        $entitiesDB = self::select($class);
+        foreach ($entitiesDB as $entityDB) {
+            if ($entityDB[$findBy] == $parameter) {
+                return $entityDB;
+            }
+        }
+        return [];
+    }
+
+    public static function delete($class, $deleteBy, $parameter)
     {
         $mysqli = DatabaseConnect::getInstance()->getMysqliConnection();
-        //$mysqli = new mysqli("localhost", "root", "root", "Task13");
-        $email = $mysqli->real_escape_string($user->getEmail());
-        $name = $mysqli->real_escape_string($user->getName());
-        $gender = $mysqli->real_escape_string($user->getGender());
-        $status = $mysqli->real_escape_string($user->getStatus());
-        $id = $mysqli->real_escape_string($user->getId());
-        $sql = "UPDATE Users SET email='$email', name='$name', gender='$gender', status='$status' WHERE id='$id'";
+        $dbName = $class::dbNameGet();
+        $sql = "DELETE FROM $dbName WHERE $deleteBy = '$parameter'";
         $mysqli->query($sql);
     }
 
-    public static function selectUsers(): array
+    public static function update($entity): void
+    {
+        $methods = [];
+
+        foreach (get_class_methods($entity) as $method) {
+            if (substr($method, 0, 3) == 'get' && $method !== 'getId') {
+                $methods[] = $method;
+            }
+        }
+
+        $mysqlValues = [];
+        $mysqlVars = [];
+        $mysqli = DatabaseConnect::getInstance()->getMysqliConnection();
+
+        foreach ($methods as $method) {
+            $mysqlVars[] = substr($method, 3);
+            $mysqlValues[] = $mysqli->real_escape_string($entity->$method());
+        }
+
+        $dbName = $entity::dbNameGet();
+        $sql = "UPDATE $dbName SET ";
+
+        for ($i = 0; $i < sizeof($mysqlVars); $i++) {
+            $sql .= "$mysqlVars[$i] = '$mysqlValues[$i]', ";
+        }
+        $sql = substr($sql, 0, -2);
+        $id = $entity->getId();
+
+        $sql .= " WHERE id=$id";
+        $mysqli->query($sql);
+    }
+
+    public static function select($class)
     {
         $mysqli = DatabaseConnect::getInstance()->getMysqliConnection();
-        //$link = mysqli_connect("localhost", "root", "root", "Task13");
-        $sql = "SELECT * FROM Users";
-        $result = $mysqli->query($sql);//mysqli_query($link, $sql);
+        $dbName = $class::dbNameGet();
+        $sql = "SELECT * FROM $dbName";
+        try {
+            $result = $mysqli->query($sql);
+        } catch (\mysqli_sql_exception $ex) {
+            self::createTable($class);
+            $result = $mysqli->query($sql);
+        }
+
         return mysqli_fetch_all($result, MYSQLI_ASSOC);
     }
 }

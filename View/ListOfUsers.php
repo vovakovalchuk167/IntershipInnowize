@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="/lib/bootstrap/css/bootstrap.css"/>
 </head>
 <body>
-<?php if (sizeof($errorMessages)) {
+<?php if ($errorMessages) {
     foreach ($errorMessages as $errorMessage) {
         echo "<p class=\"text-danger\">$errorMessage</p>";
     }

@@ -13,40 +13,47 @@ class UserController
 {
     public function index($errorMessages = []): void
     {
-        $usersDB = Database::selectUsers();
+        $usersDB = Database::select(User::class);
         $users = [];
+
         foreach ($usersDB as $userDB) {
             $users[] = new User($userDB["email"], $userDB["name"], $userDB["gender"], $userDB["status"]);
         }
+
         include 'View/ListOfUsers.php';
     }
 
-    public function update(): void
+    public function update($Request): void
     {
-        $errorMessages = [];
-        $errorMessages = array_merge($errorMessages, \Validator::validateName($_POST['Name']));
-        $errorMessages = array_merge($errorMessages, \Validator::validateEmail($_POST['Email'], $_GET['id']));
-        if (!sizeof($errorMessages)) {
-            $user = new User($_POST["Email"], $_POST["Name"], $_POST["Gender"], $_POST["Status"]);
-            $user->setId($_GET['id']);
-            Database::updateUser($user);
+        $post = $Request->getPOST();
+        $get = $Request->getGET();
+
+        $errorMessages = \Validator::validate([
+            $post['Name'] => ['Name', ['Length', 4, 20]],
+            $post['Email'] => [['Email', $get['id']]]
+        ]);
+
+        if (!$errorMessages) {
+            $user = new User($post["Email"], $post["Name"], $post["Gender"], $post["Status"]);
+            $user->setId($get['id']);
+            Database::update($user);
         }
+
         $this->index($errorMessages);
     }
 
-    public function edit(): void
+    public function edit($Request): void
     {
-        $user = Database::findUserByEmail($_GET['Email']);
-        if ($user) {
-            include 'View/EditUser.php';
-        } else {
-            $this->index("Edit Error");
-        }
+        $userArray = Database::find(User::class, 'email', $Request->getGET()['Email']);
+        $user = new User($userArray["email"], $userArray["name"], $userArray["gender"], $userArray["status"]);
+        $user->setId($userArray['id']);
+        Database::update($user);
+        include 'View/EditUser.php';
     }
 
-    public function delete(): void
+    public function delete($Request): void
     {
-        Database::delete($_GET['Email']);
+        Database::delete(User::class, 'email', $Request->getGET()['Email']);
         $this->index();
     }
 
@@ -55,14 +62,18 @@ class UserController
         include 'View/AddUser.php';
     }
 
-    public function store(): void
+    public function store($Request): void
     {
-        $errorMessages = [];
-        $errorMessages = array_merge($errorMessages, \Validator::validateEmail($_POST['Email']));
-        $errorMessages = array_merge($errorMessages, \Validator::validateName($_POST['Name']));
-        if (!sizeof($errorMessages)) {
-            $user = new User($_POST["Email"], $_POST["Name"], $_POST["Gender"], $_POST["Status"]);
-            Database::insertUser($user);
+        $post = $Request->getPOST();
+
+        $errorMessages = \Validator::validate([
+            $post['Name'] => ['Name', ['Length', 4, 20]],
+            $post['Email'] => [['Email']]
+        ]);
+
+        if (!$errorMessages) {
+            $user = new User($post["Email"], $post["Name"], $post["Gender"], $post["Status"]);
+            Database::store($user);
         }
 
         $this->index($errorMessages);

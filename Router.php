@@ -5,6 +5,7 @@ namespace Task13;
 use Controller\UserController;
 
 include_once('Controller/UserController.php');
+include_once('Request.php');
 
 class Router
 {
@@ -22,9 +23,11 @@ class Router
 
     public function start(): void
     {
-        $method = $this->routes[parse_url($_SERVER['REQUEST_URI'])['path']][0];
-        $controllerStr = $this->routes[parse_url($_SERVER['REQUEST_URI'])['path']][1];
+        $request = new Request();
+        $SERVER = $request->getSERVER();
+        $method = $this->routes[parse_url($SERVER['REQUEST_URI'])['path']][0];
+        $controllerStr = $this->routes[parse_url($SERVER['REQUEST_URI'])['path']][1];
         $controller = new $controllerStr();
-        $controller->$method();
+        $controller->$method($request);
     }
 }

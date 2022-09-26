@@ -11,7 +11,12 @@ class DatabaseConnect
 
     private function __construct()
     {
-        $this->mysqli = new mysqli("localhost", "root", "root", "Task13");
+        try {
+            $this->mysqli = new mysqli("localhost", "root", "root", "Task13");
+        } catch (\mysqli_sql_exception $ex) {
+            self::create();
+            $this->mysqli = new mysqli("localhost", "root", "root", "Task13");
+        }
     }
 
     public static function getInstance()
@@ -25,5 +30,12 @@ class DatabaseConnect
     public function getMysqliConnection()
     {
         return $this->mysqli;
+    }
+
+    public static function create()
+    {
+        $mysqli = new  mysqli("localhost", "root", "root");
+        $sql = "CREATE DATABASE IF NOT EXISTS Task13";
+        $mysqli->query($sql);
     }
 }
