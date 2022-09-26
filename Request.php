@@ -15,6 +15,8 @@ class Request
         $this->GET = $_GET;
     }
 
+    // add get / has methods
+    
     public function getSERVER(): array
     {
         return $this->SERVER;
